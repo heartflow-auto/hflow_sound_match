@@ -1,0 +1,87 @@
+import os
+import glob
+import random
+from pydub import AudioSegment
+from dataclasses import dataclass
+import numpy as np
+import time
+import math
+import soundfile as sf
+from io import BytesIO
+from .config import cfg as config
+
+
+class Emotion:
+    peaceful = 'P'
+    sleepy = 'S'
+    happy = 'H'
+
+
+# @dataclass
+# class TimeArguments:
+#     segment_time = 10
+#     fade_in_time = 10
+#     fade_out_time = 10
+#     slide_window = 10
+
+
+class FilesHelper:
+    L0_folder = os.path.join(
+        config['sound_folders_root'],
+        '01 环境文件'
+    )
+    file_formats = ('mp3',)
+
+    def get_files_by_folder_root(cls, folder_root):
+        base_fs = os.listdir(folder_root)
+        base_fs = [i for i in base_fs if i.endswith(cls.file_formats)]
+        fs = [os.path.join(folder_root, i) for i in base_fs]
+        return fs, base_fs
+
+    def get_files_by_layer(self, *args, layer):
+        """
+        get_files_by_layer(seq1, seq2, layer=Int)
+        :param args:
+        :param layer:
+        :return:
+        """
+        assert len(args), "at least one files seq to process"
+        if len(args) == 2:
+            base_files = args[1]
+        else:
+            base_files = [os.path.basename(i) for i in args[0]]
+        layer_nums = [i.split('_L')[-1].split('.') for i in base_files]
+        inds = [i for i, v in enumerate(layer_nums) if int(v) == int(layer)]
+        rets = []
+        for obj in args:
+            rets.append([obj[i] for i in inds])
+        return rets
+
+    @property
+    def environment_files(cls):
+        # 可以更简单的实现： 用get_files_by_folder_root实现
+        fs = os.listdir(cls.L0_folder)
+        fs = [i for i in fs if i.endswith(cls.file_formats)]
+        fs = [os.path.join(cls.L0_folder, i) for i in fs]
+        return fs
+
+    @staticmethod
+    def get_emotion_root_by_emotion(emotion):
+        map_dict = {
+            Emotion.peaceful: '02 平静',
+            Emotion.sleepy: '03 愉悦',
+            Emotion.happy: '04 催眠'
+        }
+        map_dict = {key: os.path.join(config['sound_folders_root'], value) for key,value in map_dict.items()}
+        return map_dict[emotion]
+
+
+class SoundObjHelper:
+    @staticmethod
+    def librosa_to_pydub(sound_obj, sr, fmt='WAV'):
+        buffer = BytesIO()
+        sf.write(buffer, sound_obj, sr, format=fmt)
+        buffer.seek(0)
+        audio_segment = AudioSegment.from_file(buffer, format=fmt.lower())
+        return audio_segment
+

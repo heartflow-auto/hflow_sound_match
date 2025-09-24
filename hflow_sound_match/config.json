@@ -1,0 +1,7 @@
+{
+  "sound_folders_root": "..",
+  "memory_min_time": 10,
+  "fade_time": 3,
+  "transport_time": 10,
+  "slide_window": 60
+}
