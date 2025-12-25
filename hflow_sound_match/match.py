@@ -203,6 +203,13 @@ class RelaxMusicSession:
 
     def load_and_preprocess_sound(self, sound_file):
         sound = AudioSegment.from_file(sound_file)
+
+        # 音量归一化到-20dBFS（避免过大或过小）
+        # -20dBFS是一个合适的目标音量，既不会太大也不会太小
+        target_dBFS = -20.0
+        change_in_dBFS = target_dBFS - sound.dBFS
+        sound = sound.apply_gain(change_in_dBFS)
+
         if len(sound) < 1000 * self.config['transport_time']:
             sound = sound.append(sound, crossfade=1000 * self.config['fade_time'])
         return sound
@@ -234,6 +241,20 @@ class RelaxMusicSession:
         l1_segment = self.generate_l1_segment_and_update_l1(heart_rate)
         l2_segment = self.generate_l2_segment_and_update_l2(heart_rate)
         assert len(l0_segment) == len(l1_segment) == len(l2_segment), "segments are different length!"
-        segment = l0_segment.overlay(l1_segment).overlay(l2_segment)
+
+        # 混合三层音频（使用音量控制避免过载）
+        # L0: 环境音，降低6dB（音量减半）
+        # L1: 主旋律，保持原音量
+        # L2: 和声，降低3dB
+        segment = l0_segment - 6  # 环境音降低
+        segment = segment.overlay(l1_segment)  # 主旋律
+        segment = segment.overlay(l2_segment - 3)  # 和声降低
+
+        # 对最终混合结果进行音量归一化，避免削波失真
+        # 归一化到-14dBFS（比单轨略响，因为是混合音频）
+        target_dBFS = -14.0
+        change_in_dBFS = target_dBFS - segment.dBFS
+        segment = segment.apply_gain(change_in_dBFS)
+
         self.hr_memory.append(heart_rate)
         return segment
