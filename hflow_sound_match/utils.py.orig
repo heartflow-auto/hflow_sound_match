@@ -43,6 +43,15 @@ class FilesHelper:
 
     @staticmethod
     def get_files_by_layer(*args, layer):
+=======
+    def get_files_by_folder_root(cls, folder_root):
+        base_fs = os.listdir(folder_root)
+        base_fs = [i for i in base_fs if i.endswith(cls.file_formats)]
+        fs = [os.path.join(folder_root, i) for i in base_fs]
+        return fs, base_fs
+
+    def get_files_by_layer(self, *args, layer):
+>>>>>>> origin/master
         """
         get_files_by_layer(seq1, seq2, layer=Int)
         :param args:

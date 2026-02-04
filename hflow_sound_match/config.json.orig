@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "sound_folders_root": "../..",
+=======
+  "sound_folders_root": "..",
+>>>>>>> origin/master
   "memory_min_time": 10,
   "fade_time": 3,
   "transport_time": 10,
