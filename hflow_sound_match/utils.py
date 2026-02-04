@@ -32,7 +32,6 @@ class FilesHelper:
     )
     file_formats = ('mp3',)
 
-<<<<<<< HEAD
     @staticmethod
     def get_files_by_folder_root(folder_root):
         file_formats = ('mp3',)
@@ -55,17 +54,12 @@ class FilesHelper:
         else:
             base_files = [os.path.basename(i) for i in args[0]]
         layer_nums = [i.split('_L')[-1].split('.') for i in base_files]
-<<<<<<< HEAD
         inds = [i for i, v in enumerate(layer_nums) if int(v[0]) == int(layer)]
-=======
-        inds = [i for i, v in enumerate(layer_nums) if int(v) == int(layer)]
->>>>>>> origin/master
         rets = []
         for obj in args:
             rets.append([obj[i] for i in inds])
         return rets
 
-<<<<<<< HEAD
     @staticmethod
     def environment_files():
         # 可以更简单的实现： 用get_files_by_folder_root实现
@@ -74,27 +68,14 @@ class FilesHelper:
         fs = os.listdir(L0_folder)
         fs = [i for i in fs if i.endswith(file_formats)]
         fs = [os.path.join(L0_folder, i) for i in fs]
-=======
-    @property
-    def environment_files(cls):
-        # 可以更简单的实现： 用get_files_by_folder_root实现
-        fs = os.listdir(cls.L0_folder)
-        fs = [i for i in fs if i.endswith(cls.file_formats)]
-        fs = [os.path.join(cls.L0_folder, i) for i in fs]
->>>>>>> origin/master
         return fs
 
     @staticmethod
     def get_emotion_root_by_emotion(emotion):
         map_dict = {
             Emotion.peaceful: '02 平静',
-<<<<<<< HEAD
             Emotion.happy: '03 愉悦',
             Emotion.sleepy: '04 催眠'
-=======
-            Emotion.sleepy: '03 愉悦',
-            Emotion.happy: '04 催眠'
->>>>>>> origin/master
         }
         map_dict = {key: os.path.join(config['sound_folders_root'], value) for key,value in map_dict.items()}
         return map_dict[emotion]

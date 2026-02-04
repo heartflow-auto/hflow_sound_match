@@ -8,13 +8,10 @@ class HeartMemory:
         self.time_length = time_length
         self.min_hr, self.max_hr, self.mean_hr = None, None, None
 
-<<<<<<< HEAD
     def __getitem__(self, key):
         """支持 memory['hr'] 和 memory['time'] 访问"""
         return self.memory[key]
 
-=======
->>>>>>> origin/master
     @property
     def is_empty(self):
         return self.min_hr is None

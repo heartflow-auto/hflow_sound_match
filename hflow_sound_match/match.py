@@ -31,11 +31,7 @@ class RelaxMusicSession:
                  config=cfg):
         # self.time_args = time_args
         self.config = config
-<<<<<<< HEAD
         self.fade_in_time = self.fade_out_time = self.config['fade_time']  # / 2
-=======
-        self.fade_in_time = self.fade_out_time = self.config['fade']  # / 2
->>>>>>> origin/master
         self.l0_file = self.init_l0_file()
         self.l0_sound = AudioSegment.from_file(self.l0_file)
         self.l0_faded = self.fade(self.l0_sound)
@@ -73,16 +69,10 @@ class RelaxMusicSession:
     def current_emotion(self):
         raise NotImplementedError
 
-<<<<<<< HEAD
-    def init_l0_file(self):
-        """environment sound"""
-        return random.choice(FilesHelper.environment_files())
-=======
     # todo: ...
     def init_l0_file(self):
         """environment sound"""
         return random.choice(FilesHelper.environment_files)
->>>>>>> origin/master
 
     def check_emotion(self, heart_rate, *args):
         return False
@@ -124,11 +114,7 @@ class RelaxMusicSession:
 
     def generate_l2_segment_and_update_l2(self, heart_rate):
         # rest = len(self.l2_sound) - self.l2_state['end']
-<<<<<<< HEAD
         if len(self.hr_memory['time']) > 0 and max(self.hr_memory['time']) - min(self.hr_memory['time']) >= self.config['slide_window']:
-=======
-        if max(self.hr_memory['time']) - min(self.hr_memory['time']) >= self.config['slide_window']:
->>>>>>> origin/master
             # rule 1
             if heart_rate > self.hr_memory.mean_hr:
                 current_rule1_count = self.l2_state.get('larger_than_mean_hr', 0) + 1
@@ -152,11 +138,8 @@ class RelaxMusicSession:
         l1_file = self.match_by_layer(heart_rate, 1)
         self.l1_file = l1_file
         self.l1_sound = self.load_and_preprocess_sound(self.l1_file)
-<<<<<<< HEAD
         # 重置L1状态，从头开始播放新音乐
         self.l1_state = EasyDict({"start": None, "end": None, 'next': None})
-=======
->>>>>>> origin/master
         # self.l1_sound = self.l1_sound  # .fade_in(
         # 1000*self.fade_in_time
         # ).fade_out(
@@ -164,22 +147,17 @@ class RelaxMusicSession:
         # )
 
     def update_l2(self, heart_rate):
-<<<<<<< HEAD
         l2_file = self.match_by_layer(heart_rate, 2)
         self.l2_file = l2_file
         self.l2_sound = self.load_and_preprocess_sound(self.l2_file)
         # 重置L2状态，从头开始播放新音乐
         self.l2_state = EasyDict({"start": None, "end": None, 'next': None})
-=======
-        ...
->>>>>>> origin/master
 
     def simply_generate_next_sound_segment_and_update_state(self, layer):
         sound = {0: self.l0_sound, 1: self.l1_sound, 2: self.l2_sound}[layer]
         state = {0: self.l0_state, 1: self.l1_state, 2: self.l2_state}[layer]
         rest = len(sound) - state['end'] if state['end'] is not None else len(sound)
 
-<<<<<<< HEAD
         # 生成当前segment
         if state['end'] is None:
             # 第一次播放
@@ -208,53 +186,6 @@ class RelaxMusicSession:
         # 更新状态
         state['start'] = start
         state['end'] = end
-=======
-        start_temp = None
-        end_temp = None
-        # 当前l0文件临近播放结束，回到开头继续放
-        if rest < 1000 * self.config['transport_time']:
-            ...  # 几乎不会再触发，新的else逻辑下已处理当前情况
-            # completion_length = 1000 * self.config['transport_time'] - rest
-            # segment = sound[state['end']:] + sound[:completion_length]
-            # # segment = segment.fade_in(1000 * self.fade_in_time).fade_out(1000 * self.fade_out_time)
-            # start = 0
-            # end = completion_length
-        else:
-            if state['end'] is None:
-                start = 0
-                end = 1000 * self.config['transport_time']
-                segment = sound[start:end]
-            else:
-                assert state['next'] is not None, "next segment is None!"
-                start = state['end']
-                end = state['end'] + 1000 * self.config['transport_time']
-                segment = state['next']
-
-            start_next = start + 1000 * self.config['transport_time']
-            end_next = end + 1000 * self.config['transport_time']
-
-            # return to beginning and cross fade
-            if end_next >= len(sound):
-                start_temp = 0
-                end_temp = 1000 * self.config['transport_time']
-                segment_1 = sound[start_temp:end_temp]
-                segment = segment.append(segment_1, crossfade=1000 * self.config['fade_time'])
-                start_next = end_temp
-                end_next = end_temp + 1000 * self.config['transport_time']
-
-            segment_next = sound[start_next:end_next]
-            state['next'] = segment_next
-
-        # start其实并不重要，几乎用不到
-        if end == len(sound):
-            end = 0
-        if start_temp is not None:
-            state['start'] = start_temp
-            state['end'] = end_temp
-        else:
-            state['start'] = start
-            state['end'] = end
->>>>>>> origin/master
 
         """
         促使正常情况下，start和end表示当前segment的，而next为下一次使用的。
@@ -272,7 +203,6 @@ class RelaxMusicSession:
         return segment
 
     def load_and_preprocess_sound(self, sound_file):
-<<<<<<< HEAD
         sound = AudioSegment.from_file(sound_file)
 
         # 音量归一化到-20dBFS（避免过大或过小）
@@ -281,9 +211,6 @@ class RelaxMusicSession:
         change_in_dBFS = target_dBFS - sound.dBFS
         sound = sound.apply_gain(change_in_dBFS)
 
-=======
-        sound = AudioSegment.from_file(self.l1_file)
->>>>>>> origin/master
         if len(sound) < 1000 * self.config['transport_time']:
             sound = sound.append(sound, crossfade=1000 * self.config['fade_time'])
         return sound
@@ -296,7 +223,6 @@ class RelaxMusicSession:
                 self.l1_file = self.match_by_layer(heart_rate, 1)
                 self.l1_sound = self.load_and_preprocess_sound(self.l1_file)
             if self.l2_file is None:
-<<<<<<< HEAD
                 # 优先尝试使用与L1文件相同bpm的L2文件
                 if self.l1_file is not None:
                     potential_l2_file = self.l1_file.replace('_L1.mp3', '_L2.mp3')
@@ -306,10 +232,6 @@ class RelaxMusicSession:
                         self.l2_file = self.match_by_layer(heart_rate, 2)
                 else:
                     self.l2_file = self.match_by_layer(heart_rate, 2)
-=======
-                # todo: 修改为优先替换字符串，判断是否存在L2文件，不存在再回到此逻辑
-                self.l2_file = self.match_by_layer(heart_rate, 2)
->>>>>>> origin/master
                 self.l2_sound = self.load_and_preprocess_sound(self.l2_file)
             # l1_segment = self.simply_generate_next_sound_segment_and_update_state(1)
             # l2_segment = self.simply_generate_next_sound_segment_and_update_state(2)
@@ -320,7 +242,6 @@ class RelaxMusicSession:
         l1_segment = self.generate_l1_segment_and_update_l1(heart_rate)
         l2_segment = self.generate_l2_segment_and_update_l2(heart_rate)
         assert len(l0_segment) == len(l1_segment) == len(l2_segment), "segments are different length!"
-<<<<<<< HEAD
 
         # 混合三层音频（使用音量控制避免过载）
         # L0: 环境音，降低6dB（音量减半）
@@ -336,8 +257,5 @@ class RelaxMusicSession:
         change_in_dBFS = target_dBFS - segment.dBFS
         segment = segment.apply_gain(change_in_dBFS)
 
-=======
-        segment = l0_segment.overlay(l1_segment).overlay(l2_segment)
->>>>>>> origin/master
         self.hr_memory.append(heart_rate)
         return segment

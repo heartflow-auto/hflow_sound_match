@@ -9,11 +9,7 @@ from loguru import logger
 this_file_root = os.path.abspath(__file__)
 _config_json_path = os.path.abspath(os.path.join(os.path.abspath(__file__), '..', 'config.json'))
 with open(_config_json_path, 'r') as f:
-<<<<<<< HEAD
     cfg = json.load(f)
-=======
-    cfg = json.load(_config_json_path)
->>>>>>> origin/master
 
 # 配置约束
 assert cfg['transport_time'] > cfg['fade_time'], "transport_time必须大于fade_time"
